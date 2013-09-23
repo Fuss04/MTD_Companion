@@ -7,6 +7,7 @@ For Linux x64, you can download the development enviroment (SDK, NDK, Vuforia, A
 https://uofi.box.com/s/nfdzhso4f4zo1vd7w2q3
 
 Development Process:
+
 1. Fork this repo to your personal github.
 2. command: git checkout <url>
 3. command: cd MTD_Companion
