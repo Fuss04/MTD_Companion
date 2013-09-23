@@ -7,16 +7,16 @@ For Linux x64, you can download the development enviroment (SDK, NDK, Vuforia, A
 https://uofi.box.com/s/nfdzhso4f4zo1vd7w2q3
 
 Development Process:
-00. Fork this repo to your personal github.
-01. command: git checkout <url>
-02. command: cd MTD_Companion
-03. command: git checkout dev
-04. Do work
-05. command: git add -A
-06. command: git commit -m "Your message here"
-07. command: git push origin dev
-08. Login to your github online and open your MTD_Companion repo
-09. Switch to your dev branch
-10. Click "Pull Request"
-11. Add a comment and click "Send pull request"
-12. Jacob will review and accept/reject your code.
+1. Fork this repo to your personal github.
+2. command: git checkout <url>
+3. command: cd MTD_Companion
+4. command: git checkout dev
+5. Do work
+6. command: git add -A
+7. command: git commit -m "Your message here"
+8. command: git push origin dev
+9. Login to your github online and open your MTD_Companion repo
+10. Switch to your dev branch
+11. Click "Pull Request"
+12. Add a comment and click "Send pull request"
+13. Jacob will review and accept/reject your code.
