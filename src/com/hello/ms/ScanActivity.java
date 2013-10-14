@@ -1,6 +1,7 @@
 package com.hello.ms;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.view.SurfaceView;
@@ -12,8 +13,8 @@ import com.moodstocks.android.Result;
 
 public class ScanActivity extends Activity implements ScannerSession.Listener {
 
-	private int ScanOptions = Result.Type.IMAGE | Result.Type.EAN8
-	| Result.Type.EAN13 | Result.Type.QRCODE | Result.Type.DATAMATRIX;
+	private int ScanOptions = Result.Type.IMAGE;
+	private int ScanExtras = Result.Extra.CORNERS;
 
 	private ScannerSession session;
 	private TextView resultTextView;
@@ -35,9 +36,11 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
     	// set session options
 		session.setOptions(ScanOptions);
+		session.setExtras(ScanExtras);
 
 		resultTextView = (TextView) findViewById(R.id.scan_result);
 		resultTextView.setText("Scan result: N/A");
+
 	}
 
 	@Override
@@ -85,8 +88,13 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	@Override
 	public void onScanComplete(Result result) {
 		if (result != null) {
-			resultTextView.setText(String.format("Scan result: %s", result.getValue()));
+			float[] c = result.getCorners();
+			resultTextView.setText(String.format("Scan result: %s\n(%f, %f)\n(%f, %f)\n(%f, %f)\n(%f, %f)", result.getValue(), c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
 		}
+		else {
+			resultTextView.setText("Scan result: N/A");
+		}
+
 	}
 
 	@Override
