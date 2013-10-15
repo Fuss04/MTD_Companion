@@ -1,6 +1,8 @@
 package com.hello.ms;
 
-public class MTDBus {
+import android.os.Bundle;
+
+public class MTDBusObject {
 	private int expectedArrivalTimeInMinutes;
 	private int expectedArrivalTime;
 	private String stopCode;
@@ -11,30 +13,30 @@ public class MTDBus {
 		return expectedArrivalTimeInMinutes;
 	}
 	public void setExpectedArrivalTimeInMinutes(int expectedArrivalTimeInMinutes){
-		self.expectedArrivalTimeInMinutes = expectedArrivalTime;
+		this.expectedArrivalTimeInMinutes = expectedArrivalTimeInMinutes;
 	}
 	public int getExpectedArrivalTime(){
 		return expectedArrivalTime;
 	}
 	public void setExpectedArrivalTime(int expectedArrivalTime){
-		self.expectedArrivalTime = expectedArrivalTime;
+		this.expectedArrivalTime = expectedArrivalTime;
 	}
 	public String getStopCode(){
 		return stopCode;
 	}
 	public void setStopCode(String stopCode){
-		self.stopCode = stopCode;
+		this.stopCode = stopCode;
 	}
 	public String getStopID(){
 		return stopID;
 	}
 	public void setStopID(String stopID){
-		self.stopID = stopID;
+		this.stopID = stopID;
 	}
 	public String getHeadSign(){
 		return headSign;
 	}
 	public void setHeadSign(String headSign){
-		self.headSign = headSign;
+		this.headSign = headSign;
 	}
 }
