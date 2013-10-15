@@ -5,6 +5,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.content.Intent;
+// import android.database.sqlite.SQLiteDatabase;
+// import android.database.sqlite.SQLiteOpenHelper;
+// import android.database.Cursor;
+// import android.database.SQLException;
+
+// import java.io.IOException;
 
 import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.Scanner;
@@ -33,6 +39,24 @@ public class MainActivity extends Activity implements Scanner.SyncListener {
 				e.log();
 			}
 		}
+
+		// DictionaryOpenHelper myDbHelper = new DictionaryOpenHelper(this);
+		// // myDbHelper = new DictionaryOpenHelper(this);
+		// try {
+		// 	myDbHelper.createDataBase();
+		// } catch (IOException ioe) {
+		// 	throw new Error("Unable to create database");
+		// }
+		// try {
+		// 	myDbHelper.openDataBase();
+		// }catch(SQLException sqle){
+		// 	throw sqle;
+		// }
+
+		// SQLiteDatabase db = myDbHelper.getReadableDatabase();
+		// Cursor cursor = db.rawQuery("SELECT code FROM stops WHERE stop_id=?", new String[] {"150DALE"});
+		// Log.d("SQL", cursor.getString(0));
+		// cursor.close();
 	}
 
 	@Override
