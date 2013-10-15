@@ -11,10 +11,21 @@ import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.ScannerSession;
 import com.moodstocks.android.Result;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 	private int ScanOptions = Result.Type.IMAGE;
 	private int ScanExtras = Result.Extra.CORNERS;
+	
+	private RequestQueue mRequestQueue;
 
 	private ScannerSession session;
 	private TextView resultTextView;
@@ -23,6 +34,8 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.scan);
+
+		mRequestQueue =  Volley.newRequestQueue(this);
 
     	// get the camera preview surface & result text view
 		SurfaceView preview = (SurfaceView) findViewById(R.id.preview);
