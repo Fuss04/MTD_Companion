@@ -1,3 +1,5 @@
+package com.hello.ms;
+
 public class MTDBus {
 	private int expectedArrivalTimeInMinutes;
 	private int expectedArrivalTime;
