@@ -1,5 +1,4 @@
 MTD_Companion
 =============
 
-This is a sample moodstock app.
-See https://moodstocks.com/documentation/user-guides/android-guide/
+This is the dev branch. You may send pull requests to this branch.
