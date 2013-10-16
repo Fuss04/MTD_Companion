@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.view.SurfaceView;
 import android.util.Log;
+import android.graphics.Bitmap;
 
 import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.ScannerSession;
@@ -14,10 +15,16 @@ import com.moodstocks.android.Result;
 public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 	private int ScanOptions = Result.Type.IMAGE;
-	private int ScanExtras = Result.Extra.CORNERS;
+	private int ScanExtras = Result.Extra.CORNERS | Result.Extra.WARPED_IMAGE;
 
 	private ScannerSession session;
 	private TextView resultTextView;
+
+	private OCRHelper ocr;
+	private Boolean done;
+	private Boolean found_code;
+	private String recognized;
+	private String stop_id;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,11 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		resultTextView = (TextView) findViewById(R.id.scan_result);
 		resultTextView.setText("Scan result: N/A");
 
+		ocr = new OCRHelper();
+		done = false;
+		found_code = false;
+		recognized = "NA";
+		stop_id = "NA";
 	}
 
 	@Override
@@ -54,7 +66,10 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	@Override
 	protected void onPause() {
 		super.onPause();
-
+		done = false;
+		found_code = false;
+		recognized = "NA";
+		stop_id = "NA";
     	// pause the scanner session
 		session.pause();
 	}
@@ -62,6 +77,11 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		done = false;
+		found_code = false;
+		recognized = "NA";
+		stop_id = "NA";
+		ocr.close();
 
     	// close the scanner session
 		session.close();
@@ -90,11 +110,24 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		if (result != null) {
 			float[] c = result.getCorners();
 			resultTextView.setText(String.format("Scan result: %s\n(%f, %f)\n(%f, %f)\n(%f, %f)\n(%f, %f)", result.getValue(), c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
+
+			Bitmap frame = result.getWarped();
 		}
 		else {
 			resultTextView.setText("Scan result: N/A");
 		}
-
+		/*
+		if (!done && result != null) {
+			if (!found_code) {
+				Bitmap frame = result.getWarped();
+				recognized = ocr.getText(frame);
+				if (found_code = db.exists(recognized)) {
+					stop_id = db.lookup(recognized);
+				}
+			}
+			resultTextView.setText(String.format("OCR: %s\nID: %s", recognized, stop_id));
+		}
+		*/
 	}
 
 	@Override
