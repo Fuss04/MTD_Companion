@@ -45,7 +45,7 @@ public class OCRHelper {
 		return baseApi.getUTF8Text();
 	}
 
-	private Bitmap cropToArea(Bitmap frame, int x1, int x2, int y1, int y2) {
+	public Bitmap cropToArea(Bitmap frame, int x1, int x2, int y1, int y2) {
 		return frame;
 	}
 
