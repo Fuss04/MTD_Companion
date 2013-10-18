@@ -126,16 +126,16 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 			resultTextView.setText(String.format("Scan result: %s\n(%f, %f)\n(%f, %f)\n(%f, %f)\n(%f, %f)", result.getValue(), c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
 
 			Bitmap frame = result.getWarped();
-			//Bitmap croppedFrame = OCRHelper.cropToArea(frame, 10, 20, 10, 20);
 
 			// gets 10th frame
 			if (flag == 10) {
+				Bitmap croppedFrame = OCRHelper.cropToArea(frame, 360, 50, 44, 20);
 				File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 				File file = new File(path, "DemoPicture.png");
 				try {
 					path.mkdirs();
 					OutputStream os = new FileOutputStream(file);
-					frame.compress(Bitmap.CompressFormat.PNG, 90, os);
+					croppedFrame.compress(Bitmap.CompressFormat.PNG, 90, os);
 					os.close();
 
 					MediaScannerConnection.scanFile(this,
