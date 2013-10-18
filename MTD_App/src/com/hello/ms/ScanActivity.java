@@ -120,13 +120,14 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 	@Override
 	public void onScanComplete(Result result) {
-		if (result != null) {
-			flag++;
-			float[] c = result.getCorners();
-			resultTextView.setText(String.format("Scan result: %s\n(%f, %f)\n(%f, %f)\n(%f, %f)\n(%f, %f)", result.getValue(), c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
+		if (!done && result != null) {
+			//flag++;
+			//float[] c = result.getCorners();
+			//resultTextView.setText(String.format("Scan result: %s\n(%f, %f)\n(%f, %f)\n(%f, %f)\n(%f, %f)", result.getValue(), c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
 
 			Bitmap frame = result.getWarped();
-			recognized = recognized + "\n" + ocr.getText(frame);
+			recognized = ocr.getText(frame);
+			if (recognized.equals("mtd1327")) { done = true; }
 			resultTextView.setText(recognized);
 
 			// gets 10th frame
