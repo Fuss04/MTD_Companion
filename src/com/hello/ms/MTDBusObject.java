@@ -9,6 +9,14 @@ public class MTDBusObject {
 	private String stopID;
 	private String headSign;
 
+	public MTDBusObject() {
+		this.expectedArrivalTime = 0;
+		this.expectedArrivalTimeInMinutes = 0;
+		this.stopCode = null;
+		this.stopID = null;
+		this.headSign = null;
+	}
+
 	public int getExpectedArrivalTimeInMinutes(){
 		return expectedArrivalTimeInMinutes;
 	}
