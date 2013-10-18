@@ -239,5 +239,4 @@ public class SimpleAndroidOCRActivity extends Activity {
 	
 	// www.Gaut.am was here
 	// Thanks for reading!
-}
-*/
+}*/
