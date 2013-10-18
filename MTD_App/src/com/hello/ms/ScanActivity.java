@@ -60,11 +60,11 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 		flag = 0;
 
-		// ocr = new OCRHelper();
-		// done = false;
-		// found_code = false;
-		// recognized = "NA";
-		// stop_id = "NA";
+		ocr = new OCRHelper();
+		done = false;
+		found_code = false;
+		recognized = "";
+		stop_id = "NA";
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		super.onPause();
 		done = false;
 		found_code = false;
-		recognized = "NA";
+		recognized = "";
 		stop_id = "NA";
     	// pause the scanner session
 		session.pause();
@@ -92,9 +92,9 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		super.onDestroy();
 		done = false;
 		found_code = false;
-		recognized = "NA";
+		recognized = "";
 		stop_id = "NA";
-		// ocr.close();
+		ocr.close();
 
     	// close the scanner session
 		session.close();
@@ -126,33 +126,35 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 			resultTextView.setText(String.format("Scan result: %s\n(%f, %f)\n(%f, %f)\n(%f, %f)\n(%f, %f)", result.getValue(), c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
 
 			Bitmap frame = result.getWarped();
+			recognized = recognized + "\n" + ocr.getText(frame);
+			resultTextView.setText(recognized);
 
 			// gets 10th frame
-			if (flag == 10) {
-				Bitmap croppedFrame = OCRHelper.cropToArea(frame, 360, 50, 44, 20);
-				File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-				File file = new File(path, "DemoPicture.png");
-				try {
-					path.mkdirs();
-					OutputStream os = new FileOutputStream(file);
-					croppedFrame.compress(Bitmap.CompressFormat.PNG, 90, os);
-					os.close();
+			// if (flag == 10) {
+				// Bitmap croppedFrame = OCRHelper.cropToArea(frame, 350, 45, 64, 30);
+				// File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+				// File file = new File(path, "DemoPicture.png");
+				// try {
+				// 	path.mkdirs();
+				// 	OutputStream os = new FileOutputStream(file);
+				// 	croppedFrame.compress(Bitmap.CompressFormat.PNG, 90, os);
+				// 	os.close();
 
-					MediaScannerConnection.scanFile(this,
-							new String[] { file.toString() }, null,
-							new MediaScannerConnection.OnScanCompletedListener() {
-						public void onScanCompleted(String path, Uri uri) {
-							Log.i("ExternalStorage", "Scanned " + path + ":");
-							Log.i("ExternalStorage", "-> uri=" + uri);
-						}
-					});
-				} catch (IOException e) {
-					Log.w("ExternalStorage", "Error writing " + file, e);
-				}
-			}
+				// 	MediaScannerConnection.scanFile(this,
+				// 			new String[] { file.toString() }, null,
+				// 			new MediaScannerConnection.OnScanCompletedListener() {
+				// 		public void onScanCompleted(String path, Uri uri) {
+				// 			Log.i("ExternalStorage", "Scanned " + path + ":");
+				// 			Log.i("ExternalStorage", "-> uri=" + uri);
+				// 		}
+				// 	});
+				// } catch (IOException e) {
+				// 	Log.w("ExternalStorage", "Error writing " + file, e);
+				// }
+			// }
 		}
 		else {
-			resultTextView.setText("Scan result: N/A");
+			//resultTextView.setText("Scan result: N/A");
 		}
 		/*
 		if (!done && result != null) {

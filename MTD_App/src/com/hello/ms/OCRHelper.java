@@ -25,7 +25,7 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 public class OCRHelper {
 
 	public static final String PACKAGE_NAME = "com.hello.ms";
-	public static final String DATA_PATH = "/path/that/I/dont/know";
+	private String DATA_PATH;
 	public static final String lang = "eng";
 
 	TessBaseAPI baseApi;
@@ -35,14 +35,17 @@ public class OCRHelper {
 		// DATA_PATH = Path to the storage
 		// lang = for which the language data exists, usually "eng"
 		// Eg. baseApi.init("/mnt/sdcard/tesseract/tessdata/eng.traineddata", "eng");
+        DATA_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+"/tessdata/eng.traineddata";
 		baseApi.init(DATA_PATH, lang);
     }
 
     public String getText(Bitmap frame) {
     	frame = frame.copy(Bitmap.Config.ARGB_8888, true);
-    	frame = cropToArea(frame, 0, frame.getWidth(), 0, frame.getHeight());
+    	frame = cropToArea(frame, 350, 45, 64, 30);
 		baseApi.setImage(frame);
-		return baseApi.getUTF8Text();
+        Srting recognizedText = baseApi.getUTF8Text();
+        // do analysis on recognized text before returning
+		return recognizedText;
 	}
 
 	public static Bitmap cropToArea(Bitmap frame, int x, int y, int width, int height) {
