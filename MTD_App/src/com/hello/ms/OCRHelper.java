@@ -43,7 +43,7 @@ public class OCRHelper {
     	frame = frame.copy(Bitmap.Config.ARGB_8888, true);
     	frame = cropToArea(frame, 350, 45, 64, 30);
 		baseApi.setImage(frame);
-        Srting recognizedText = baseApi.getUTF8Text();
+        String recognizedText = baseApi.getUTF8Text();
         // do analysis on recognized text before returning
 		return recognizedText;
 	}
