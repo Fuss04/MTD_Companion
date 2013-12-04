@@ -1,7 +1,5 @@
 package edu.illinois.mtdcompanion.activities;
 
-import android.os.Bundle;
-
 public class MTDBusObject {
 	private int expectedArrivalTimeInMinutes;
 	private int expectedArrivalTime;

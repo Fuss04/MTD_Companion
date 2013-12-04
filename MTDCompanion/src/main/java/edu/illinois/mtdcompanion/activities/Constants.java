@@ -1,7 +1,5 @@
 package edu.illinois.mtdcompanion.activities;
 
-import android.os.Bundle;
-
 public class Constants {
 	public static String MTD_KEY = "?key=5d254f4e925f48a08aab977cd1ecfc7b";
 	public static String MTD_VERSION = "v2.2/";
