@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="lib/android.jar"/>
+	<classpathentry kind="lib" path="lib/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="lib/fest-android-1.0.7.jar"/>
 	<classpathentry kind="lib" path="lib/maps.jar"/>
 	<classpathentry kind="lib" path="lib/robolectric-2.2-jar-with-dependencies.jar" sourcepath="lib/src/robolectric-2.2-sources.jar">
@@ -11,5 +12,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/MTDCompanionTest/lib/doc/robolectric-2.2-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/MTDCompanion"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
