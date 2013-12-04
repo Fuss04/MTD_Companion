@@ -34,6 +34,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Services -->
+        <service
+            android:name=".services.FileBusStopService"
+            android:exported="false">
+        </service>
+        <service
+            android:name=".services.ServerBusStopService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>
