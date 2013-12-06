@@ -3,15 +3,15 @@ package edu.illinois.mtdcompanion.data;
 import java.sql.SQLException;
 import java.util.List;
 
-import android.content.Context;
-
-import edu.illinois.mtdcompanion.interfaces.DatabaseManager;
-import edu.illinois.mtdcompanion.models.BusStop;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import android.content.Context;
+
 import com.j256.ormlite.stmt.QueryBuilder;
+
+import edu.illinois.mtdcompanion.interfaces.DatabaseManager;
+import edu.illinois.mtdcompanion.models.BusStop;
 
 /**
  * Manages connection to database for storing bus stops <br>
@@ -153,10 +153,10 @@ public class BusStopDatabaseManager implements DatabaseManager {
 
 			// Get bus stop associated with stopCode
 			busStopQuery.where().eq(BusStop.STOP_CODE, stopCode);
-			List<BusStop> busQuery = busStop.query();
+			List<BusStop> busQuery = busStopQuery.query();
 			if (!busQuery.isEmpty()) {
 				busStop = busStopQuery.query().get(0);
-			}	
+			}
 		} catch (SQLException e) {
 			logger.error("Failed to get entry in BusStopDatabase where stopCode={}", stopCode);
 			e.printStackTrace();
@@ -178,7 +178,7 @@ public class BusStopDatabaseManager implements DatabaseManager {
 
 			// Get bus stop associated with stopID
 			busStopQuery.where().eq(BusStop.STOP_ID, stopID);
-			List<BusStop> busQuery = busStop.query();
+			List<BusStop> busQuery = busStopQuery.query();
 			if (!busQuery.isEmpty()) {
 				busStop = busStopQuery.query().get(0);
 			}
