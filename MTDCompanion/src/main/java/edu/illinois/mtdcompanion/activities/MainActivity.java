@@ -8,21 +8,13 @@ import android.util.Log;
 import android.view.View;
 
 import edu.illinois.mtdcompanion.R;
-
-import edu.illinois.mtdcompanion.R;
 import edu.illinois.mtdcompanion.data.FileBusStopLoader;
-import edu.illinois.mtdcompanion.services.GPSTracker;
 
 import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.Scanner;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.Cursor;
-import android.database.SQLException;
-import java.io.IOException;
+
 
 public class MainActivity extends Activity implements Scanner.SyncListener {
-
 	// Moodstocks API key/secret pair
 	private static final String API_KEY = "d5rofl7bu6c3vgyctcpi";
 	private static final String API_SECRET = "HURqVRoDyh0yZ96p";
@@ -32,6 +24,8 @@ public class MainActivity extends Activity implements Scanner.SyncListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
