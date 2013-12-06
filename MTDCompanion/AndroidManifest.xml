@@ -31,18 +31,26 @@
         android:icon="@drawable/mtdcompanion_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
-        <!-- Main Activity -->
-        <activity
-            android:name="edu.illinois.mtdcompanion.activities.MainActivity"
-            android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        
+        <!-- Splash Screen -->
+         <activity android:name="edu.illinois.mtdcompanion.activities.SplashScreen"
+             		android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+             
+         </activity>
+        
+        <!-- Main Activity -->
+        <activity
+            android:name="edu.illinois.mtdcompanion.activities.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
+        
+        <!-- Scan Activity -->
         <activity
             android:name="edu.illinois.mtdcompanion.activities.ScanActivity"
             android:label="@string/app_name"

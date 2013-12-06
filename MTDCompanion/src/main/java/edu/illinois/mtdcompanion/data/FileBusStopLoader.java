@@ -32,7 +32,7 @@ public class FileBusStopLoader {
 	/**
 	 * File path of jSON file storing bus stops
 	 */
-	private static final String BUS_STOPS_FILE = "/json/Bus_Stops.json";
+	private static final String BUS_STOPS_FILE = "json/Bus_Stops.json";
 
 	/**
 	 * AssetManager to open file included in assets folder
@@ -142,6 +142,8 @@ public class FileBusStopLoader {
 		database.open(context);
 
 		for (JsonElement busStop : busStopList) {
+			Log.d("BusStop", busStop.toString());
+
 			String stopID = busStop.getAsJsonObject().getAsJsonObject("stop_id").getAsString();
 			String stopCode = busStop.getAsJsonObject().getAsJsonObject("code").getAsString();
 			String stopName = busStop.getAsJsonObject().getAsJsonObject("stop_name").getAsString();

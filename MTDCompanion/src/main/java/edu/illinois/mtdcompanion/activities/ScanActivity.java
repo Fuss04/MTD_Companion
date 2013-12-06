@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -29,10 +28,8 @@ import com.moodstocks.android.Result;
 import com.moodstocks.android.ScannerSession;
 
 import edu.illinois.mtdcompanion.R;
-import edu.illinois.mtdcompanion.data.BusStopDatabaseManager;
 import edu.illinois.mtdcompanion.helpers.FileUploadCallback;
 import edu.illinois.mtdcompanion.helpers.FileUploadFacade;
-import edu.illinois.mtdcompanion.models.BusStop;
 import edu.illinois.mtdcompanion.models.MTDBus;
 import edu.illinois.mtdcompanion.models.MTDDepartures;
 import edu.illinois.mtdcompanion.models.MTDOCRData;
@@ -45,7 +42,9 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	private ScannerSession session;
 	private TextView resultTextView;
 
+	private Boolean processing;
 	private Boolean done;
+
 	private String recognized;
 
 	private RequestQueue mRequestQueue;
@@ -53,8 +52,6 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	private MTDOCRData mtdOCRData;
 
 	private int flag;
-
-	private ProgressDialog simpleWaitDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +80,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 		flag = 0;
 
+		processing = false;
 		done = false;
 		recognized = "";
 	}
@@ -100,6 +98,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	protected void onPause() {
 		super.onPause();
 		done = false;
+		processing = false;
 		recognized = "";
 		// pause the scanner session
 		session.pause();
@@ -109,6 +108,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	protected void onDestroy() {
 		super.onDestroy();
 		done = false;
+		processing = false;
 		recognized = "";
 
 		// close the scanner session
@@ -135,11 +135,14 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 	@Override
 	public void onScanComplete(Result result) {
-		if (!done && (result != null)) {
+		if (!processing && !done && (result != null)) {
 			flag++;
 
 			// Waits 10 frames for camera to focus
 			if (flag >= 10) {
+				processing = true;
+				flag = 0;
+
 				Bitmap frame = result.getWarped();
 
 				// 1. crop frame
@@ -153,11 +156,10 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 				//     - set resultTextView.setText(recognized);
 
 				frame = frame.copy(Bitmap.Config.ARGB_8888, true);
-				frame = cropToArea(frame, Constants.CROP_X, Constants.CROP_Y, Constants.CROP_W, Constants.CROP_H);
+				frame = cropToArea(frame);
 				resultTextView.setText("Cropped");
 
 				File png = saveToPng(frame); // TODO null check
-				resultTextView.setText("Saved");
 
 				sendPng(png,
 						new FileUploadCallback() {
@@ -166,14 +168,24 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 								String stopCode = parseJsonTextObject(response);
 								if (stopCode == null) {
 									resultTextView.setText("stopCode == null");
+									processing = false;
 									return;
 								}
+								else {
+									resultTextView.setText("stopCode == " + stopCode);
+								}
+
 								String stopId = lookUpIdFromCode(stopCode);
 								if (stopId == null) {
 									resultTextView.setText("stopId == null");
+									processing = false;
 									return;
 								}
+								else {
+									resultTextView.setText("stopId == " + stopId);
+								}
 
+								processing = false;
 								done = true;
 								getNextBus(stopId);
 				    		}
@@ -195,8 +207,14 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		resultTextView.setText(String.format("Scan failed: %d", error.getErrorCode()));
 	}
 
-	private Bitmap cropToArea(Bitmap frame, int x, int y, int width, int height) {
-		return Bitmap.createBitmap(frame, x, y, width, height);
+	private Bitmap cropToArea(Bitmap frame) {
+		int frameWidth = frame.getWidth();
+		int frameHeight = frame.getHeight();
+		int x = (int) (frameWidth * .5);
+		int y = 0;
+		int w = (int) ((frameWidth *.5) - 1);
+		int h = (int) (frameHeight * .4);
+		return Bitmap.createBitmap(frame, x, y, w, h);
 	}
 
 	private File saveToPng(Bitmap frame) {
@@ -236,7 +254,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		mtdOCRData = gson.fromJson(stringResponse, MTDOCRData.class);
 
 		if (mtdOCRData.isValid()) {
-			resultTextView.setText(mtdOCRData.getStopCode());
+//			resultTextView.setText(mtdOCRData.getStopCode());
 			return mtdOCRData.getStopCode();
 		}
 		else {
@@ -245,7 +263,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	}
 
 	private String lookUpIdFromCode(String code) {
-		BusStopDatabaseManager database = BusStopDatabaseManager.getInstance();
+/*		BusStopDatabaseManager database = BusStopDatabaseManager.getInstance();
 		database.open(getApplicationContext());
 
 		BusStop stop = database.getStopByCode(code);
@@ -254,6 +272,12 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 		if (stop != null) {
 			return stop.getStopID();
+		} else {
+			return null;
+		}*/
+		Boolean valid = (code.equals("1327"));
+		if (valid) {
+			return "UNIGWN";
 		} else {
 			return null;
 		}
