@@ -29,7 +29,6 @@ public class FileBusStopLoader {
 	/**
 	 * SLF4J Logger object for logging in FileBusStopLoader class
 	 */
-	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(FileBusStopLoader.class);
 
 	/**
