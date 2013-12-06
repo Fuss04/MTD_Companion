@@ -34,6 +34,15 @@ import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.Result;
 import com.moodstocks.android.ScannerSession;
 
+import edu.illinois.mtdcompanion.R;
+import edu.illinois.mtdcompanion.data.BusStopDatabaseManager;
+import edu.illinois.mtdcompanion.helpers.FileUploadCallback;
+import edu.illinois.mtdcompanion.helpers.FileUploadFacade;
+import edu.illinois.mtdcompanion.models.BusStop;
+import edu.illinois.mtdcompanion.models.MTDBus;
+import edu.illinois.mtdcompanion.models.MTDDepartures;
+import edu.illinois.mtdcompanion.models.MTDOCRData;
+
 public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 	private int ScanOptions = Result.Type.IMAGE;
@@ -42,7 +51,9 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	private ScannerSession session;
 	private TextView resultTextView;
 
+	private Boolean processing;
 	private Boolean done;
+
 	private String recognized;
 
 	private RequestQueue mRequestQueue;
@@ -78,6 +89,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 		flag = 0;
 
+		processing = false;
 		done = false;
 		recognized = "";
 	}
@@ -95,6 +107,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	protected void onPause() {
 		super.onPause();
 		done = false;
+		processing = false;
 		recognized = "";
 		// pause the scanner session
 		session.pause();
@@ -104,6 +117,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	protected void onDestroy() {
 		super.onDestroy();
 		done = false;
+		processing = false;
 		recognized = "";
 
 		// close the scanner session
@@ -130,11 +144,14 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 	@Override
 	public void onScanComplete(Result result) {
-		if (!done && (result != null)) {
+		if (!processing && !done && (result != null)) {
 			flag++;
 
 			// Waits 10 frames for camera to focus
 			if (flag >= 10) {
+				processing = true;
+				flag = 0;
+
 				Bitmap frame = result.getWarped();
 
 				// 1. crop frame
@@ -149,7 +166,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 				frame = frame.copy(Bitmap.Config.ARGB_8888, true);
 				frame = cropToArea(frame);
-				resultTextView.setText("Cropped");
+				// resultTextView.setText("Cropped");
 
 				File png = saveToPng(frame); // TODO null check
 
@@ -159,22 +176,25 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 					public void onSuccess(int code, String response) {
 						String stopCode = parseJsonTextObject(response);
 						if (stopCode == null) {
-							resultTextView.setText("stopCode == null");
+							// resultTextView.setText("stopCode == null");
+							processing = false;
 							return;
 						}
 						else {
-							resultTextView.setText("stopCode == " + stopCode);
+							// resultTextView.setText("stopCode == " + stopCode);
 						}
 
 						String stopId = lookUpIdFromCode(stopCode);
 						if (stopId == null) {
-							resultTextView.setText("stopId == null");
+							// resultTextView.setText("stopId == null");
+							processing = false;
 							return;
 						}
 						else {
-							resultTextView.setText("stopId == " + stopId);
+							// resultTextView.setText("stopId == " + stopId);
 						}
 
+						processing = false;
 						done = true;
 						getNextBus(stopId);
 					}
@@ -252,10 +272,10 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	}
 
 	private String lookUpIdFromCode(String code) {
-		/*		BusStopDatabaseManager database = BusStopDatabaseManager.getInstance();
+		BusStopDatabaseManager database = BusStopDatabaseManager.getInstance();
 		database.open(getApplicationContext());
 
-		BusStop stop = database.getStopByCode(code);
+		BusStop stop = database.getStopByCode("MTD" + code);
 
 		database.close();
 
@@ -263,13 +283,16 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 			return stop.getStopID();
 		} else {
 			return null;
-		}*/
-		Boolean valid = (code == "6051");
+		}
+
+		/*
+		Boolean valid = (code.equals("1327"));
 		if (valid) {
-			return "GWNMN";
+			return "UNIGWN";
 		} else {
 			return null;
 		}
+		 */
 	}
 
 	private void getNextBus(String stopId) {
@@ -295,7 +318,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		Gson gson = new GsonBuilder().create();
 		mtdDepartures = gson.fromJson(stringResponse, MTDDepartures.class);
 		if (mtdDepartures.getDepartures().isEmpty()) {
-			resultTextView.setText("ERROR");
+			resultTextView.setText("I'm Sorry ;)\nNo Busses Available");
 		} else {
 			MTDBus nextBus = mtdDepartures.getDepartures().get(0);
 			recognized = nextBus.getHeadsign() + " expected\nin " + nextBus.getExpected_mins() + "minutes";

@@ -7,7 +7,7 @@
     <!-- Android SDK -->
     <uses-sdk
         android:minSdkVersion="10"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="19" />
 
     <!-- Features -->
     <uses-feature android:name="android.hardware.location.gps" android:required="true"/>

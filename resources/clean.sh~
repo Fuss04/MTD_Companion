@@ -1,3 +1,0 @@
-#!/bin/zsh
-echo $1
-./textcleaner -g -f 25 -u -s 1 a.jpg b.jpg
