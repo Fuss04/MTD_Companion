@@ -56,6 +56,13 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
+        
+        <!-- ViewFinder Activity -->
+        <activity
+            android:name="edu.illinois.mtdcompanion.activities.ViewFinderActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
 
         <!-- Services -->
         <service

@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
+
+import edu.illinois.mtdcompanion.R;
 
 import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.Scanner;
-
-import edu.illinois.mtdcompanion.R;
-import edu.illinois.mtdcompanion.services.GPSTracker;
 // import android.database.sqlite.SQLiteDatabase;
 // import android.database.sqlite.SQLiteOpenHelper;
 // import android.database.Cursor;
@@ -26,7 +24,6 @@ public class MainActivity extends Activity implements Scanner.SyncListener {
 
 	private boolean compatible = false;
 	private Scanner scanner;
-	private GPSTracker gps;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,20 +41,8 @@ public class MainActivity extends Activity implements Scanner.SyncListener {
 			}
 		}
 
-		//GPS stuff
-		gps = new GPSTracker(MainActivity.this);
-		if(gps.canGetLocation()){
 
-			double latitude = gps.getLatitude();
-			double longitude = gps.getLongitude();
-			Toast.makeText(getApplicationContext(), "Yuss\nlong = " +longitude +"\nlat = " + latitude, Toast.LENGTH_LONG).show();
-		}else{
-			// can't get location
-			// GPS or Network is not enabled
-			// Ask user to enable GPS/network in settings
-			gps.showSettingsAlert();
-		}
-/*
+		/*
 		// Initialize database
 		SharedPreferences settings = getSharedPreferences("DATABASE", 0);
 		boolean created = settings.getBoolean("CREATED", false);
@@ -111,5 +96,9 @@ public class MainActivity extends Activity implements Scanner.SyncListener {
 
 	public void onScanButtonClicked(View view) {
 		startActivity(new Intent(this, ScanActivity.class));
+	}
+
+	public void onViewFinderButtonClicked(View view) {
+		startActivity(new Intent(this, ViewFinderActivity.class));
 	}
 }

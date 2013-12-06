@@ -1,5 +1,8 @@
 package edu.illinois.mtdcompanion.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +15,7 @@ public class MTDBus {
 	 * SLF4J Logger object for logging in MTDBus class
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(MTDBus.class);
-	
+
 	private String stop_id;
 	private String headsign;
 	private String vehicle_id;
@@ -23,12 +26,14 @@ public class MTDBus {
 	private String expected;
 	private String expected_mins;
 	private MTDBusTrip trip;
-	
+	private List<MTDBusLatLon> stop_points = new ArrayList<MTDBusLatLon>();
+
+
 	/**
 	 * Default constructor
 	 */
 	public MTDBus() {
-		
+
 	}
 
 	public String getStop_id() {
@@ -90,5 +95,13 @@ public class MTDBus {
 	}
 	public void setTrip(MTDBusTrip trip) {
 		this.trip = trip;
+	}
+
+	public List<MTDBusLatLon> getStop_points() {
+		return stop_points;
+	}
+
+	public void setStop_points(List<MTDBusLatLon> stop_points) {
+		this.stop_points = stop_points;
 	}
 }

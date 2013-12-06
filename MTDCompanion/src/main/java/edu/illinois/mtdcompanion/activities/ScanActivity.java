@@ -15,6 +15,13 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.widget.TextView;
 
+import edu.illinois.mtdcompanion.R;
+import edu.illinois.mtdcompanion.helpers.FileUploadCallback;
+import edu.illinois.mtdcompanion.helpers.FileUploadFacade;
+import edu.illinois.mtdcompanion.models.MTDBus;
+import edu.illinois.mtdcompanion.models.MTDDepartures;
+import edu.illinois.mtdcompanion.models.MTDOCRData;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -26,13 +33,6 @@ import com.google.gson.GsonBuilder;
 import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.Result;
 import com.moodstocks.android.ScannerSession;
-
-import edu.illinois.mtdcompanion.R;
-import edu.illinois.mtdcompanion.helpers.FileUploadCallback;
-import edu.illinois.mtdcompanion.helpers.FileUploadFacade;
-import edu.illinois.mtdcompanion.models.MTDBus;
-import edu.illinois.mtdcompanion.models.MTDDepartures;
-import edu.illinois.mtdcompanion.models.MTDOCRData;
 
 public class ScanActivity extends Activity implements ScannerSession.Listener {
 
@@ -155,35 +155,35 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 				sendPng(png,
 						new FileUploadCallback() {
-				    		@Override
-				    		public void onSuccess(int code, String response) {
-								String stopCode = parseJsonTextObject(response);
-								if (stopCode == null) {
-									resultTextView.setText("stopCode == null");
-									return;
-								}
-								else {
-									resultTextView.setText("stopCode == " + stopCode);
-								}
+					@Override
+					public void onSuccess(int code, String response) {
+						String stopCode = parseJsonTextObject(response);
+						if (stopCode == null) {
+							resultTextView.setText("stopCode == null");
+							return;
+						}
+						else {
+							resultTextView.setText("stopCode == " + stopCode);
+						}
 
-								String stopId = lookUpIdFromCode(stopCode);
-								if (stopId == null) {
-									resultTextView.setText("stopId == null");
-									return;
-								}
-								else {
-									resultTextView.setText("stopId == " + stopId);
-								}
+						String stopId = lookUpIdFromCode(stopCode);
+						if (stopId == null) {
+							resultTextView.setText("stopId == null");
+							return;
+						}
+						else {
+							resultTextView.setText("stopId == " + stopId);
+						}
 
-								done = true;
-								getNextBus(stopId);
-				    		}
+						done = true;
+						getNextBus(stopId);
+					}
 
-				    		@Override
-				    		public void onFailure(int code, String response, Throwable e) {
-				    			resultTextView.setText(e.getCause().toString());
-				    		}
-						});
+					@Override
+					public void onFailure(int code, String response, Throwable e) {
+						resultTextView.setText(e.getCause().toString());
+					}
+				});
 			}
 		}
 		else {
@@ -243,7 +243,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		mtdOCRData = gson.fromJson(stringResponse, MTDOCRData.class);
 
 		if (mtdOCRData.isValid()) {
-//			resultTextView.setText(mtdOCRData.getStopCode());
+			//			resultTextView.setText(mtdOCRData.getStopCode());
 			return mtdOCRData.getStopCode();
 		}
 		else {
@@ -252,7 +252,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	}
 
 	private String lookUpIdFromCode(String code) {
-/*		BusStopDatabaseManager database = BusStopDatabaseManager.getInstance();
+		/*		BusStopDatabaseManager database = BusStopDatabaseManager.getInstance();
 		database.open(getApplicationContext());
 
 		BusStop stop = database.getStopByCode(code);
@@ -276,17 +276,17 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		String url = Constants.MTD_BASE_URL + Constants.MTD_VERSION + Constants.MTD_FORMAT + Constants.MTD_METHOD_GET_DEPARTURES_BY_STOP + Constants.MTD_KEY + Constants.STOP_ID_PARAMETER + stopId;
 		StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
 				new Response.Listener<String>() {
-					@Override
-					public void onResponse(String response) {
-						parseJsonBusObject(response);
-					}
-				},
-				new Response.ErrorListener() {
-					@Override
-					public void onErrorResponse(VolleyError error) {
-						// TODO
-					}
-				});
+			@Override
+			public void onResponse(String response) {
+				parseJsonBusObject(response);
+			}
+		},
+		new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				// TODO
+			}
+		});
 
 		mRequestQueue.add(stringRequest);
 	}
@@ -301,5 +301,11 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 			recognized = nextBus.getHeadsign() + " expected\nin " + nextBus.getExpected_mins() + "minutes";
 			resultTextView.setText(recognized);
 		}
+	}
+
+	private String getTargetStop(float latitude, float longitude, float bearing)
+	{
+
+		return "yolo";
 	}
 }
