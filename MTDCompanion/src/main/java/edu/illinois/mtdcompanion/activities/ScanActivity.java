@@ -165,10 +165,12 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 				    		public void onSuccess(int code, String response) {
 								String stopCode = parseJsonTextObject(response);
 								if (stopCode == null) {
+									resultTextView.setText("stopCode == null");
 									return;
 								}
 								String stopId = lookUpIdFromCode(stopCode);
 								if (stopId == null) {
+									resultTextView.setText("stopId == null");
 									return;
 								}
 
