@@ -4,17 +4,17 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context=".MainActivity"
-	android:background="@color/theme">
+	android:background="@color/theme" >
 
     <RelativeLayout 
-        android:id="@+id/scan_btn"
+        android:id="@+id/outer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 		android:layout_centerInParent="true" >
 		
 		<Button
 		    android:id="@+id/scan_btn"
-		    android:text="Scan Sign"
+		    android:text="@string/scan_button_text"
 			android:textColor="@color/dk_blue"
 			android:textSize="30sp"
 			android:layout_width="270dp"
@@ -31,7 +31,7 @@
 		    android:layout_marginTop="10dp"
 		    android:background="@drawable/buttonshape"
 		    android:onClick="onViewFinderButtonClicked"
-		    android:text="View Finder"
+		    android:text="@string/view_button_text"
 		    android:textColor="@color/dk_blue"
 		    android:textSize="30sp" />
 	</RelativeLayout>
