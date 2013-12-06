@@ -6,5 +6,6 @@
     <string name="hello_world">Hello World!</string>
 	<string name="scan_button_text">Scan Sign</string>
 	<string name="view_button_text">View Finder</string>
+	<string name="server_text">http://172.16.148.159:9000</string>
     
 </resources>
