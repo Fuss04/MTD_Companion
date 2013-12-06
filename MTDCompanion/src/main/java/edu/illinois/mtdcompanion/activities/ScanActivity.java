@@ -29,8 +29,10 @@ import com.moodstocks.android.Result;
 import com.moodstocks.android.ScannerSession;
 
 import edu.illinois.mtdcompanion.R;
+import edu.illinois.mtdcompanion.data.BusStopDatabaseManager;
 import edu.illinois.mtdcompanion.helpers.FileUploadCallback;
 import edu.illinois.mtdcompanion.helpers.FileUploadFacade;
+import edu.illinois.mtdcompanion.models.BusStop;
 import edu.illinois.mtdcompanion.models.MTDBus;
 import edu.illinois.mtdcompanion.models.MTDDepartures;
 import edu.illinois.mtdcompanion.models.MTDOCRData;
