@@ -153,7 +153,10 @@ public class BusStopDatabaseManager implements DatabaseManager {
 
 			// Get bus stop associated with stopCode
 			busStopQuery.where().eq(BusStop.STOP_CODE, stopCode);
-			busStop = busStopQuery.query().get(0);
+			List<BusStop> busQuery = busStop.query();
+			if (!busQuery.isEmpty()) {
+				busStop = busStopQuery.query().get(0);
+			}	
 		} catch (SQLException e) {
 			logger.error("Failed to get entry in BusStopDatabase where stopCode={}", stopCode);
 			e.printStackTrace();
@@ -175,7 +178,10 @@ public class BusStopDatabaseManager implements DatabaseManager {
 
 			// Get bus stop associated with stopID
 			busStopQuery.where().eq(BusStop.STOP_ID, stopID);
-			busStop = busStopQuery.query().get(0);
+			List<BusStop> busQuery = busStop.query();
+			if (!busQuery.isEmpty()) {
+				busStop = busStopQuery.query().get(0);
+			}
 		} catch (SQLException e) {
 			logger.error("Failed to get entry in BusStopDatabase where stopID={}", stopID);
 			e.printStackTrace();
