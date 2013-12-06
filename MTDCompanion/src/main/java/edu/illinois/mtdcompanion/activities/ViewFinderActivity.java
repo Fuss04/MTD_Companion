@@ -41,6 +41,7 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 	private float currentDegree = 999999;
 	private SensorManager mSensorManager;
 	private float degreeChange = 999999;
+	private String stop_id;
 
 	int tempCount = 0;
 
@@ -150,23 +151,25 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 		//resultTextView.setText(String.format("Scan failed: %d", error.getErrorCode()));
 	}
 
-	private void getNextBus(String stopId) {
-		String url = Constants.MTD_BASE_URL + Constants.MTD_VERSION + Constants.MTD_FORMAT + Constants.MTD_METHOD_GET_DEPARTURES_BY_STOP + Constants.MTD_KEY + Constants.STOP_ID_PARAMETER + stopId;
-		StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-				new Response.Listener<String>() {
-			@Override
-			public void onResponse(String response) {
-				parseJsonBusObject(response);
-			}
-		},
-		new Response.ErrorListener() {
-			@Override
-			public void onErrorResponse(VolleyError error) {
-				// TODO
-			}
-		});
+	private void getNextBus() {
+		if (stop_id != null) {
+			String url = Constants.MTD_BASE_URL + Constants.MTD_VERSION + Constants.MTD_FORMAT + Constants.MTD_METHOD_GET_DEPARTURES_BY_STOP + Constants.MTD_KEY + Constants.STOP_ID_PARAMETER + stop_id;
+			StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+					new Response.Listener<String>() {
+				@Override
+				public void onResponse(String response) {
+					parseJsonBusObject(response);
+				}
+			},
+			new Response.ErrorListener() {
+				@Override
+				public void onErrorResponse(VolleyError error) {
+					// TODO
+				}
+			});
 
-		mRequestQueue.add(stringRequest);
+			mRequestQueue.add(stringRequest);
+		}
 	}
 
 	private void parseJsonBusObjectBearing(String stringResponse, double lat, double lon) {
@@ -195,11 +198,13 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 				if(degreeDistance(calc, currentDegree) < diff)
 				{
 					targetStop = tempLatLon.getStop_name();
+					stop_id = tempLatLon.getStop_id();
 					diff = Math.abs(calc-currentDegree);
 				}
 
 			}
 		}
+		getNextBus();
 	}
 
 	private void getNearestFourBuses(final double lat, final double lon) {
@@ -244,7 +249,7 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 		} else {
 			MTDBus nextBus = mtdDepartures.getDepartures().get(0);
 			String recognized = nextBus.getHeadsign() + " expected\nin " + nextBus.getExpected_mins() + "minutes";
-			resultTextView.setText(recognized);
+			resultTextView.setText(targetStop +"\n" + recognized);
 		}
 	}
 
