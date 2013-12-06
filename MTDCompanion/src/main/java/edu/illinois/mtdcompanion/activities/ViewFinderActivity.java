@@ -46,7 +46,7 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 
 	float lat = 0;
 	float lon = 0;
-	String targetStop;
+	String targetStop = "No stop found.";
 	float latitude;
 	float longitude;
 
@@ -58,6 +58,8 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 
 		mRequestQueue = Volley.newRequestQueue(this);
 		mtdDepartures = new MTDDepartures();
+		resultTextView = (TextView) findViewById(R.id.scan_result);
+
 
 		// get the camera preview surface & result text view
 		SurfaceView preview = (SurfaceView) findViewById(R.id.preview);
@@ -73,20 +75,17 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 		if(gps.canGetLocation()){
 			latitude = (float) gps.getLatitude();
 			longitude = (float) gps.getLongitude();
-			resultTextView = (TextView) findViewById(R.id.scan_result);
-
 		}else{
-			// can't get location
-			// GPS or Network is not enabled
-			// Ask user to enable GPS/network in settings
+			//dummy data for presentation
+			latitude = (float) 40.109290;
+			longitude = (float) -88.239948;
 			gps.showSettingsAlert();
-		}
 
+		}
 		//Compass time yo
 		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
-		lat = (float) 40.109290;
-		lon = (float) -88.239948;
+
 		getNearestFourBuses(latitude, longitude);
 
 		// set session options//
@@ -191,11 +190,11 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 			while(iterator2.hasNext())
 			{
 				MTDBusLatLon tempLatLon = iterator2.next();
-				float calc = (float) bearing(lat, lon, tempLatLon.getLat(), tempLatLon.getLon());
+				float calc = (float) bearing(latitude, longitude, tempLatLon.getLat(), tempLatLon.getLon());
 				if(degreeDistance(calc, currentDegree) < diff)
 				{
 					targetStop = tempLatLon.getStop_name();
-					diff = Math.abs(calc-currentDegree);
+					diff = degreeDistance(calc, currentDegree);
 				}
 
 			}
