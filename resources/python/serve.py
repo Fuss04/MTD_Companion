@@ -8,13 +8,14 @@ from string import digits
 HOST_NAME = '172.16.148.159'
 PORT_NUMBER = 9000
 
+db = {}
 stack = []
 N = 0
 
 class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def store_path(s):
         global N
-        path = 'image' + str(N)
+        path = 'images/image' + str(N)
         N += 1
         return path
 
@@ -121,7 +122,12 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             if fail:
                 continue
 
-            return json.dumps({'valid':True, 'stopCode':text})
+            if text in db:
+                # return json.dumps({'valid':True, 'stopCode':db[text]})
+                return json.dumps({'valid':True, 'stopCode':text})
+            else:
+                return json.dumps({'valid':False, 'stopCode':None})
+
 
         return json.dumps({'valid':False, 'stopCode':None})
 
@@ -160,8 +166,16 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         s.end_headers()
         s.wfile.write("Alex's Server")
 
+def populate_db():
+    with open('stops.csv', 'r') as f:
+        for line in f:
+            t = line.strip().split(',')
+            stop_code = t[1][3:]
+            stop_id = t[0]
+            db[stop_code] = stop_id
 
 if __name__ == '__main__':
+    populate_db()
     server_class = BaseHTTPServer.HTTPServer
     httpd = server_class((HOST_NAME, PORT_NUMBER), MyHandler)
     print time.asctime(), "Server Starts - %s:%s" % (HOST_NAME, PORT_NUMBER)
