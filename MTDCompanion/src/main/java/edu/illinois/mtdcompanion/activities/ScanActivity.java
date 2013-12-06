@@ -1,11 +1,20 @@
 package edu.illinois.mtdcompanion.activities;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.SurfaceView;
 import android.widget.TextView;
 
@@ -29,7 +38,6 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	private ScannerSession session;
 	private TextView resultTextView;
 
-	private OCRHelper ocr;
 	private Boolean done;
 	private Boolean found_code;
 	private String recognized;
@@ -67,7 +75,6 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 		flag = 0;
 
-		ocr = new OCRHelper();
 		done = false;
 		found_code = false;
 		recognized = "";
@@ -127,72 +134,55 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	@Override
 	public void onScanComplete(Result result) {
 		if (!done && (result != null)) {
-			//flag++;
-			//float[] c = result.getCorners();
-			//resultTextView.setText(String.format("Scan result: %s\n(%f, %f)\n(%f, %f)\n(%f, %f)\n(%f, %f)", result.getValue(), c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]));
+			flag++;
 
-			Bitmap frame = result.getWarped();
-			recognized = ocr.getText(frame);
-			resultTextView.setText(recognized);
+			// Waits 10 frames for camera to focus
+			if (flag >= 10) {
+				Bitmap frame = result.getWarped();
 
-			if (recognized.equals("mtd1327")) {
-				done = true;
+				// 1. crop frame
+				// 2. save as png
+				// 3. send png to server
+				// 4. get code on response
+				// 5. check if code is in database
+				//     -No : return (will get repeat 1-5 on next frame)
+				//     -Yes: done = true; goto 6
+				// 6. get next bus time - make sure to check for no busses
+				//     - set resultTextView.setText(recognized);
 
-				String url = Constants.MTD_BASE_URL + Constants.MTD_VERSION + Constants.MTD_FORMAT + Constants.MTD_METHOD_GET_DEPARTURES_BY_STOP + Constants.MTD_KEY + Constants.STOP_ID_PARAMETER + "GWNMN";
-				JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-					@Override
-					public void onResponse(JSONObject response) {
-						parseJsonObject(response);
-					}
-				}, new Response.ErrorListener() {
-					@Override
-					public void onErrorResponse(VolleyError error) {
-					}
-				});
+				frame = frame.copy(Bitmap.Config.ARGB_8888, true);
+				frame = cropToArea(frame, Constants.CROP_X, Constants.CROP_Y, Constants.CROP_W, Constants.CROP_H);
 
-				mRequestQueue.add(jsObjRequest);
+				File png = saveToPng(frame); // TODO null check
 
+				sendPng(png,
+						new Response.Listener<JSONObject>() {
+							@Override
+							public void onResponse(JSONObject response) {
+								String stopCode = parseJsonTextObject(response);
+								if (stopCode == null) {
+									return;
+								}
+								String stopId = lookUpIdFromCode(stopCode);
+								if (stopId == null) {
+									return;
+								}
+
+								done = true;
+								getNextBus(stopId);
+							}
+						},
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								// TODO
+							}
+						});
 			}
-
-			// gets 10th frame
-			// if (flag == 10) {
-			// Bitmap croppedFrame = OCRHelper.cropToArea(frame, 350, 45, 64, 30);
-			// File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-			// File file = new File(path, "DemoPicture.png");
-			// try {
-			// 	path.mkdirs();
-			// 	OutputStream os = new FileOutputStream(file);
-			// 	croppedFrame.compress(Bitmap.CompressFormat.PNG, 90, os);
-			// 	os.close();
-
-			// 	MediaScannerConnection.scanFile(this,
-			// 			new String[] { file.toString() }, null,
-			// 			new MediaScannerConnection.OnScanCompletedListener() {
-			// 		public void onScanCompleted(String path, Uri uri) {
-			// 			Log.i("ExternalStorage", "Scanned " + path + ":");
-			// 			Log.i("ExternalStorage", "-> uri=" + uri);
-			// 		}
-			// 	});
-			// } catch (IOException e) {
-			// 	Log.w("ExternalStorage", "Error writing " + file, e);
-			// }
-			// }
 		}
 		else {
 			//resultTextView.setText("Scan result: N/A");
 		}
-		/*
-		if (!done && result != null) {
-			if (!found_code) {
-				Bitmap frame = result.getWarped();
-				recognized = ocr.getText(frame);
-				if (found_code = db.exists(recognized)) {
-					stop_id = db.lookup(recognized);
-				}
-			}
-			resultTextView.setText(String.format("OCR: %s\nID: %s", recognized, stop_id));
-		}
-		 */
 	}
 
 	@Override
@@ -200,7 +190,86 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		resultTextView.setText(String.format("Scan failed: %d", error.getErrorCode()));
 	}
 
-	private void parseJsonObject(JSONObject jsonObject) {
+	private Bitmap cropToArea(Bitmap frame, int x, int y, int width, int height) {
+		return Bitmap.createBitmap(frame, x, y, width, height);
+	}
+
+	private File saveToPng(Bitmap frame) {
+		File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		File file = new File(path, "TextFrame.png");
+		try {
+			path.mkdirs();
+			OutputStream os = new FileOutputStream(file);
+			frame.compress(Bitmap.CompressFormat.PNG, 90, os);
+			os.close();
+
+			MediaScannerConnection.scanFile(this,
+					new String[] { file.toString() }, null,
+					new MediaScannerConnection.OnScanCompletedListener() {
+				@Override
+				public void onScanCompleted(String path, Uri uri) {
+					Log.i("ExternalStorage", "Scanned " + path + ":");
+					Log.i("ExternalStorage", "-> uri=" + uri);
+				}
+			});
+		} catch (IOException e) {
+			Log.w("ExternalStorage", "Error writing " + file, e);
+			return null;
+		}
+
+		return file;
+	}
+
+	private void sendPng(File png, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+		String url = Constants.OCR_SERVER;
+		JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
+		mRequestQueue.add(jsObjRequest);
+	}
+
+	private String parseJsonTextObject(JSONObject jsonObject) {
+		boolean valid = false;
+		String code = "1234";
+
+		if (valid) {
+			return code;
+		}
+		else {
+			return null;
+		}
+	}
+
+	private String lookUpIdFromCode(String code) {
+		boolean inDatabase = false;
+		String id = "GDWN";
+
+		if (inDatabase) {
+			return id;
+		}
+		else {
+			return null;
+		}
+	}
+
+	private void getNextBus(String stopId) {
+		String url = Constants.MTD_BASE_URL + Constants.MTD_VERSION + Constants.MTD_FORMAT + Constants.MTD_METHOD_GET_DEPARTURES_BY_STOP + Constants.MTD_KEY + Constants.STOP_ID_PARAMETER + stopId;
+		JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+				new Response.Listener<JSONObject>() {
+					@Override
+					public void onResponse(JSONObject response) {
+						parseJsonBusObject(response);
+					}
+				},
+				new Response.ErrorListener() {
+					@Override
+					public void onErrorResponse(VolleyError error) {
+						// TODO
+					}
+				});
+
+		mRequestQueue.add(jsObjRequest);
+	}
+
+	private void parseJsonBusObject(JSONObject jsonObject) {
 		int expectedTimeInMinutes = -1;
 		String expectedTime = "NONE";
 		String stopID = "NONE";
@@ -217,5 +286,4 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 			resultTextView.setText("ERROR");
 		}
 	}
-
 }
