@@ -29,6 +29,7 @@ import com.moodstocks.android.Result;
 import com.moodstocks.android.ScannerSession;
 
 import edu.illinois.mtdcompanion.R;
+import edu.illinois.mtdcompanion.helpers.MultipartRequest;
 
 public class ScanActivity extends Activity implements ScannerSession.Listener {
 
@@ -156,9 +157,9 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 				File png = saveToPng(frame); // TODO null check
 
 				sendPng(png,
-						new Response.Listener<JSONObject>() {
+						new Response.Listener<String>() {
 							@Override
-							public void onResponse(JSONObject response) {
+							public void onResponse(String response) {
 								String stopCode = parseJsonTextObject(response);
 								if (stopCode == null) {
 									return;
@@ -220,13 +221,13 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		return file;
 	}
 
-	private void sendPng(File png, Response.Listener<JSONObject> listener, Response.ErrorListener errorListener) {
+	private void sendPng(File png, Response.Listener<String> listener, Response.ErrorListener errorListener) {
 		String url = Constants.OCR_SERVER;
-		JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, url, null, listener, errorListener);
-		mRequestQueue.add(jsObjRequest);
+		MultipartRequest fileRequest = new MultipartRequest(url, listener, errorListener, png);
+		mRequestQueue.add(fileRequest);
 	}
 
-	private String parseJsonTextObject(JSONObject jsonObject) {
+	private String parseJsonTextObject(String jsonObject) {
 		boolean valid = false;
 		String code = "1234";
 
