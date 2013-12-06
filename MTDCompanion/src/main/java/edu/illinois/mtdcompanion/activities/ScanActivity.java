@@ -42,9 +42,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	private TextView resultTextView;
 
 	private Boolean done;
-	private Boolean found_code;
 	private String recognized;
-	private String stop_id;
 
 	private RequestQueue mRequestQueue;
 	private MTDDepartures mtdDepartures;
@@ -80,9 +78,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		flag = 0;
 
 		done = false;
-		found_code = false;
 		recognized = "";
-		stop_id = "NA";
 	}
 
 	@Override
@@ -98,9 +94,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	protected void onPause() {
 		super.onPause();
 		done = false;
-		found_code = false;
 		recognized = "";
-		stop_id = "NA";
 		// pause the scanner session
 		session.pause();
 	}
@@ -109,9 +103,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	protected void onDestroy() {
 		super.onDestroy();
 		done = false;
-		found_code = false;
 		recognized = "";
-		stop_id = "NA";
 
 		// close the scanner session
 		session.close();
@@ -235,6 +227,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		mtdOCRData = gson.fromJson(stringResponse, MTDOCRData.class);
 
 		if (mtdOCRData.isValid()) {
+			Log.d("OCRServer", mtdOCRData.getStopCode());
 			return mtdOCRData.getStopCode();
 		}
 		else {
@@ -243,8 +236,8 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	}
 
 	private String lookUpIdFromCode(String code) {
-		boolean inDatabase = false;
-		String id = "GDWN";
+		boolean inDatabase = code == "6051";
+		String id = "GWNMN";
 
 		if (inDatabase) {
 			return id;
@@ -280,7 +273,8 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 			resultTextView.setText("ERROR");
 		} else {
 			MTDBus nextBus = mtdDepartures.getDepartures().get(0);
-			resultTextView.setText(nextBus.getHeadsign() + " expected\nin " + nextBus.getExpected_mins() + "minutes");
+			recognized = nextBus.getHeadsign() + " expected\nin " + nextBus.getExpected_mins() + "minutes";
+			resultTextView.setText(recognized);
 		}
 	}
 }
