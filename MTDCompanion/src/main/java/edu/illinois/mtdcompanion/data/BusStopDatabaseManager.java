@@ -107,6 +107,23 @@ public class BusStopDatabaseManager implements DatabaseManager {
 	}
 
 	/**
+	 * Check if table exists for storing bus stops
+	 * @return True or False depending if table exists
+	 */
+	public boolean tableExists() {
+		boolean exists = false;
+
+		try {
+			exists = database.getBusStopDAO().isTableExists();
+		} catch (SQLException e) {
+			logger.error("Failed to check if table exists in BusStopDatabase");
+			e.printStackTrace();
+		}
+
+		return exists;
+	}
+
+	/**
 	 * Get the number of rows in database table for storing bus stops
 	 * @return Number of rows in database table for storing bus stops
 	 */
