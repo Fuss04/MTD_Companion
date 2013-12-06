@@ -7,10 +7,10 @@ public class Constants {
 	public static final String MTD_FORMAT = "json/";
 	public static final String MTD_METHOD_GET_DEPARTURES_BY_STOP = "GetDeparturesByStop";
 	public static final String STOP_ID_PARAMETER = "&stop_id=";
-	public static final String OCR_SERVER = "localhost:9000";
+	public static final String OCR_SERVER = "http://172.16.148.159:9000";
 
-	public static final int CROP_X = 350;
-	public static final int CROP_Y = 45;
-	public static final int CROP_W = 64;
-	public static final int CROP_H = 30;
+	public static final int CROP_X = 500;
+	public static final int CROP_Y = 50;
+	public static final int CROP_W = 200;
+	public static final int CROP_H = 100;
 }

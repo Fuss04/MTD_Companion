@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -28,7 +30,9 @@ import com.moodstocks.android.Result;
 import com.moodstocks.android.ScannerSession;
 
 import edu.illinois.mtdcompanion.R;
-import edu.illinois.mtdcompanion.helpers.MultipartRequest;
+import edu.illinois.mtdcompanion.helpers.FileUploadCallback;
+import edu.illinois.mtdcompanion.helpers.FileUploadFacade;
+import edu.illinois.mtdcompanion.helpers.ImageUploadUtility;
 import edu.illinois.mtdcompanion.models.MTDBus;
 import edu.illinois.mtdcompanion.models.MTDDepartures;
 import edu.illinois.mtdcompanion.models.MTDOCRData;
@@ -49,6 +53,8 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	private MTDOCRData mtdOCRData;
 
 	private int flag;
+
+	private ProgressDialog simpleWaitDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -148,13 +154,15 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 				frame = frame.copy(Bitmap.Config.ARGB_8888, true);
 				frame = cropToArea(frame, Constants.CROP_X, Constants.CROP_Y, Constants.CROP_W, Constants.CROP_H);
+				resultTextView.setText("Cropped");
 
 				File png = saveToPng(frame); // TODO null check
+				resultTextView.setText("Saved");
 
 				sendPng(png,
-						new Response.Listener<String>() {
-							@Override
-							public void onResponse(String response) {
+						new FileUploadCallback() {
+				    		@Override
+				    		public void onSuccess(int code, String response) {
 								String stopCode = parseJsonTextObject(response);
 								if (stopCode == null) {
 									return;
@@ -166,13 +174,12 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 								done = true;
 								getNextBus(stopId);
-							}
-						},
-						new Response.ErrorListener() {
-							@Override
-							public void onErrorResponse(VolleyError error) {
-								// TODO
-							}
+				    		}
+
+				    		@Override
+				    		public void onFailure(int code, String response, Throwable e) {
+				    			resultTextView.setText(e.getCause().toString());
+				    		}
 						});
 			}
 		}
@@ -216,10 +223,34 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		return file;
 	}
 
-	private void sendPng(File png, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+	private class ImageUploaderTask extends AsyncTask<String, Integer, Void> {
+
+		@Override
+		protected void onPreExecute(){
+			simpleWaitDialog = ProgressDialog.show(ScanActivity.this, "Wait", "Uploading Image");
+		}
+
+		@Override
+		protected Void doInBackground(String... params) {
+			new ImageUploadUtility().uploadSingleImage(params[0]);
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result){
+			simpleWaitDialog.dismiss();
+		}
+	}
+
+	private void sendPng(File png, FileUploadCallback callback) {
+//		String url = Constants.OCR_SERVER;
+//		MultipartRequest fileRequest = new MultipartRequest(url, listener, errorListener, png);
+//		mRequestQueue.add(fileRequest);
+//		resultTextView.setText("Sent");
+
+		FileUploadFacade fileUploadFacade = new FileUploadFacade();
 		String url = Constants.OCR_SERVER;
-		MultipartRequest fileRequest = new MultipartRequest(url, listener, errorListener, png);
-		mRequestQueue.add(fileRequest);
+		fileUploadFacade.post(url, png, callback);
 	}
 
 	private String parseJsonTextObject(String stringResponse) {
@@ -227,7 +258,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		mtdOCRData = gson.fromJson(stringResponse, MTDOCRData.class);
 
 		if (mtdOCRData.isValid()) {
-			Log.d("OCRServer", mtdOCRData.getStopCode());
+			resultTextView.setText(mtdOCRData.getStopCode());
 			return mtdOCRData.getStopCode();
 		}
 		else {
@@ -236,7 +267,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	}
 
 	private String lookUpIdFromCode(String code) {
-		boolean inDatabase = code == "6051";
+		boolean inDatabase = (code == "6051");
 		String id = "GWNMN";
 
 		if (inDatabase) {

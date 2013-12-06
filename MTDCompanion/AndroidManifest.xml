@@ -7,7 +7,7 @@
     <!-- Android SDK -->
     <uses-sdk
         android:minSdkVersion="10"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="17" />
 
     <!-- Features -->
     <uses-feature android:name="android.hardware.location.gps" android:required="true"/>
@@ -44,7 +44,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ScanActivity"
+            android:name="edu.illinois.mtdcompanion.activities.ScanActivity"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>

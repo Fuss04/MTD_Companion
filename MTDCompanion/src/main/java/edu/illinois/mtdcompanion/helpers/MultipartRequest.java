@@ -9,11 +9,13 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.StringRequest;
 
-public class MultipartRequest extends StringRequest {
+public class MultipartRequest extends Request<String> {
 
 	private MultipartEntityBuilder builder;
 	private final HttpEntity entity;
@@ -25,7 +27,7 @@ public class MultipartRequest extends StringRequest {
 
 	public MultipartRequest(String url, Response.Listener<String> listener, Response.ErrorListener errorListener, File file)
 	{
-		super(Method.POST, url, listener, errorListener);
+		super(Method.POST, url, errorListener);
 
 		builder = MultipartEntityBuilder.create();
 	    builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -42,7 +44,7 @@ public class MultipartRequest extends StringRequest {
 	}
 
 	@Override
-	public byte[] getBody()	{
+	public byte[] getBody()	throws AuthFailureError{
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		try	{
 			entity.writeTo(bos);
@@ -56,5 +58,10 @@ public class MultipartRequest extends StringRequest {
 	@Override
 	protected void deliverResponse(String response)	{
 		mListener.onResponse(response);
+	}
+
+	@Override
+	protected Response<String> parseNetworkResponse(NetworkResponse response) {
+		return Response.success(new String(response.data), getCacheEntry());
 	}
 }
