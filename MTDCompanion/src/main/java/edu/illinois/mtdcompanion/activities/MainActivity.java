@@ -7,11 +7,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import edu.illinois.mtdcompanion.R;
-import edu.illinois.mtdcompanion.services.GPSTracker;
-
 import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.Scanner;
+
+import edu.illinois.mtdcompanion.R;
+import edu.illinois.mtdcompanion.services.GPSTracker;
 // import android.database.sqlite.SQLiteDatabase;
 // import android.database.sqlite.SQLiteOpenHelper;
 // import android.database.Cursor;
@@ -57,27 +57,6 @@ public class MainActivity extends Activity implements Scanner.SyncListener {
 			// Ask user to enable GPS/network in settings
 			gps.showSettingsAlert();
 		}
-
-
-
-
-		// DictionaryOpenHelper myDbHelper = new DictionaryOpenHelper(this);
-		// // myDbHelper = new DictionaryOpenHelper(this);
-		// try {
-		// 	myDbHelper.createDataBase();
-		// } catch (IOException ioe) {
-		// 	throw new Error("Unable to create database");
-		// }
-		// try {
-		// 	myDbHelper.openDataBase();
-		// }catch(SQLException sqle){
-		// 	throw sqle;
-		// }
-
-		// SQLiteDatabase db = myDbHelper.getReadableDatabase();
-		// Cursor cursor = db.rawQuery("SELECT code FROM stops WHERE stop_id=?", new String[] {"150DALE"});
-		// Log.d("SQL", cursor.getString(0));
-		// cursor.close();
 	}
 
 	@Override

@@ -1,41 +1,22 @@
 package edu.illinois.mtdcompanion.activities;
 
 import android.graphics.Bitmap;
-import android.os.Environment;
-
-import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class OCRHelper {
 
 	public static final String PACKAGE_NAME = "com.hello.ms";
-	private String DATA_PATH;
 	public static final String lang = "eng";
-
-	TessBaseAPI baseApi;
-
-	OCRHelper() {
-		TessBaseAPI baseApi = new TessBaseAPI();
-		// DATA_PATH = Path to the storage
-		// lang = for which the language data exists, usually "eng"
-		// Eg. baseApi.init("/mnt/sdcard/tesseract/tessdata/eng.traineddata", "eng");
-		DATA_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+"/tessdata/eng.traineddata";
-		baseApi.init(DATA_PATH, lang);
-	}
 
 	public String getText(Bitmap frame) {
 		frame = frame.copy(Bitmap.Config.ARGB_8888, true);
 		frame = cropToArea(frame, 350, 45, 64, 30);
-		baseApi.setImage(frame);
-		String recognizedText = baseApi.getUTF8Text();
-		// do analysis on recognized text before returning
+
+		// Send bitmap to server and get recognized frame
+		String recognizedText = "Temp";
 		return recognizedText;
 	}
 
 	public static Bitmap cropToArea(Bitmap frame, int x, int y, int width, int height) {
 		return Bitmap.createBitmap(frame, x, y, width, height);
-	}
-
-	public void close() {
-		baseApi.end();
 	}
 }

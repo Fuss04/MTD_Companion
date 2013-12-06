@@ -1,15 +1,13 @@
 package edu.illinois.mtdcompanion.activities;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.SurfaceView;
 import android.widget.TextView;
-
-import edu.illinois.mtdcompanion.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,6 +18,8 @@ import com.android.volley.toolbox.Volley;
 import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.Result;
 import com.moodstocks.android.ScannerSession;
+
+import edu.illinois.mtdcompanion.R;
 
 public class ScanActivity extends Activity implements ScannerSession.Listener {
 
@@ -101,7 +101,6 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		found_code = false;
 		recognized = "";
 		stop_id = "NA";
-		ocr.close();
 
 		// close the scanner session
 		session.close();
