@@ -165,17 +165,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 						new FileUploadCallback() {
 				    		@Override
 				    		public void onSuccess(int code, String response) {
-								String stopCode = parseJsonTextObject(response);
-								if (stopCode == null) {
-									resultTextView.setText("stopCode == null");
-									processing = false;
-									return;
-								}
-								else {
-									resultTextView.setText("stopCode == " + stopCode);
-								}
-
-								String stopId = lookUpIdFromCode(stopCode);
+								String stopId = parseJsonTextObject(response);
 								if (stopId == null) {
 									resultTextView.setText("stopId == null");
 									processing = false;
@@ -185,9 +175,19 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 									resultTextView.setText("stopId == " + stopId);
 								}
 
+/*								String stopId = lookUpIdFromCode(stopCode);
+								if (stopId == null) {
+									resultTextView.setText("stopId == null");
+									processing = false;
+									return;
+								}
+								else {
+									resultTextView.setText("stopId == " + stopId);
+								}
+*/
 								processing = false;
 								done = true;
-								getNextBus(stopId);
+//								getNextBus(stopId);
 				    		}
 
 				    		@Override
