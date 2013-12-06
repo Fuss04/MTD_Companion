@@ -42,7 +42,9 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	private ScannerSession session;
 	private TextView resultTextView;
 
+	private Boolean processing;
 	private Boolean done;
+
 	private String recognized;
 
 	private RequestQueue mRequestQueue;
@@ -78,6 +80,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 		flag = 0;
 
+		processing = false;
 		done = false;
 		recognized = "";
 	}
@@ -95,6 +98,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	protected void onPause() {
 		super.onPause();
 		done = false;
+		processing = false;
 		recognized = "";
 		// pause the scanner session
 		session.pause();
@@ -104,6 +108,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	protected void onDestroy() {
 		super.onDestroy();
 		done = false;
+		processing = false;
 		recognized = "";
 
 		// close the scanner session
@@ -130,11 +135,14 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 	@Override
 	public void onScanComplete(Result result) {
-		if (!done && (result != null)) {
+		if (!processing && !done && (result != null)) {
 			flag++;
 
 			// Waits 10 frames for camera to focus
 			if (flag >= 10) {
+				processing = true;
+				flag = 0;
+
 				Bitmap frame = result.getWarped();
 
 				// 1. crop frame
@@ -160,6 +168,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 								String stopCode = parseJsonTextObject(response);
 								if (stopCode == null) {
 									resultTextView.setText("stopCode == null");
+									processing = false;
 									return;
 								}
 								else {
@@ -169,12 +178,14 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 								String stopId = lookUpIdFromCode(stopCode);
 								if (stopId == null) {
 									resultTextView.setText("stopId == null");
+									processing = false;
 									return;
 								}
 								else {
 									resultTextView.setText("stopId == " + stopId);
 								}
 
+								processing = false;
 								done = true;
 								getNextBus(stopId);
 				    		}
@@ -264,9 +275,9 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		} else {
 			return null;
 		}*/
-		Boolean valid = (code == "6051");
+		Boolean valid = (code.equals("1327"));
 		if (valid) {
-			return "GWNMN";
+			return "UNIGWN";
 		} else {
 			return null;
 		}
