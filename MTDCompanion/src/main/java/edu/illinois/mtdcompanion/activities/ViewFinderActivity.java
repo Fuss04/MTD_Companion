@@ -42,7 +42,7 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 	private float currentDegree = 999999;
 	private SensorManager mSensorManager;
 	private float degreeChange = 999999;
-	private String busInfo = "";
+	private String busInfo = "Fetching...";
 	private String stop_id = "";
 
 	int tempCount = 0;
@@ -195,11 +195,13 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 			{
 				MTDBusLatLon tempLatLon = iterator2.next();
 				float calc = (float) bearing(latitude, longitude, tempLatLon.getLat(), tempLatLon.getLon());
-				if(degreeDistance(calc, currentDegree) < diff)
+				if((degreeDistance(calc, currentDegree) < diff) && !targetStop.equalsIgnoreCase(tempLatLon.getStop_name()))
 				{
+					busInfo = "Fetching...";
 					targetStop = tempLatLon.getStop_name();
 					stop_id = tempLatLon.getStop_id();
 					diff = degreeDistance(calc, currentDegree);
+					resultTextView.setText(targetStop + "\n" + busInfo);
 				}
 
 			}
@@ -271,6 +273,8 @@ public class ViewFinderActivity extends Activity implements ScannerSession.Liste
 		} else {
 			MTDBus nextBus = upcomingBuses.getDepartures().get(0);
 			busInfo = nextBus.getHeadsign() + " expected\nin " + nextBus.getExpected_mins() + "minutes";
+			resultTextView.setText(targetStop + "\n" + busInfo);
+
 		}
 	}
 
