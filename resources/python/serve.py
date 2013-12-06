@@ -122,11 +122,12 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             if fail:
                 continue
 
-            if text in db:
-                # return json.dumps({'valid':True, 'stopCode':db[text]})
-                return json.dumps({'valid':True, 'stopCode':text})
-            else:
-                return json.dumps({'valid':False, 'stopCode':None})
+            # if text in db:
+            #     return json.dumps({'valid':True, 'stopCode':db[text]})
+            # else:
+            #     return json.dumps({'valid':False, 'stopCode':None})
+
+            return json.dumps({'valid':True, 'stopCode':text})
 
 
         return json.dumps({'valid':False, 'stopCode':None})
