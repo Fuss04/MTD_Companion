@@ -5,9 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
@@ -22,14 +19,19 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.Result;
 import com.moodstocks.android.ScannerSession;
 
 import edu.illinois.mtdcompanion.R;
 import edu.illinois.mtdcompanion.helpers.MultipartRequest;
+import edu.illinois.mtdcompanion.models.MTDBus;
+import edu.illinois.mtdcompanion.models.MTDDepartures;
+import edu.illinois.mtdcompanion.models.MTDOCRData;
 
 public class ScanActivity extends Activity implements ScannerSession.Listener {
 
@@ -45,7 +47,8 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 	private String stop_id;
 
 	private RequestQueue mRequestQueue;
-	private MTDBusObject mtdBus;
+	private MTDDepartures mtdDepartures;
+	private MTDOCRData mtdOCRData;
 
 	private int flag;
 
@@ -55,7 +58,7 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		setContentView(R.layout.scan);
 
 		mRequestQueue = Volley.newRequestQueue(this);
-		mtdBus = new MTDBusObject();
+		mtdDepartures = new MTDDepartures();
 
 		// get the camera preview surface & result text view
 		SurfaceView preview = (SurfaceView) findViewById(R.id.preview);
@@ -227,12 +230,12 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		mRequestQueue.add(fileRequest);
 	}
 
-	private String parseJsonTextObject(String jsonObject) {
-		boolean valid = false;
-		String code = "1234";
+	private String parseJsonTextObject(String stringResponse) {
+		Gson gson = new GsonBuilder().create();
+		mtdOCRData = gson.fromJson(stringResponse, MTDOCRData.class);
 
-		if (valid) {
-			return code;
+		if (mtdOCRData.isValid()) {
+			return mtdOCRData.getStopCode();
 		}
 		else {
 			return null;
@@ -253,10 +256,10 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 
 	private void getNextBus(String stopId) {
 		String url = Constants.MTD_BASE_URL + Constants.MTD_VERSION + Constants.MTD_FORMAT + Constants.MTD_METHOD_GET_DEPARTURES_BY_STOP + Constants.MTD_KEY + Constants.STOP_ID_PARAMETER + stopId;
-		JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-				new Response.Listener<JSONObject>() {
+		StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+				new Response.Listener<String>() {
 					@Override
-					public void onResponse(JSONObject response) {
+					public void onResponse(String response) {
 						parseJsonBusObject(response);
 					}
 				},
@@ -267,24 +270,17 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 					}
 				});
 
-		mRequestQueue.add(jsObjRequest);
+		mRequestQueue.add(stringRequest);
 	}
 
-	private void parseJsonBusObject(JSONObject jsonObject) {
-		int expectedTimeInMinutes = -1;
-		String expectedTime = "NONE";
-		String stopID = "NONE";
-		String headSign = "NONE";
-		try {
-			expectedTimeInMinutes = jsonObject.getJSONArray("departures").getJSONObject(0).getInt("expected_mins");
-			// expectedTime = jsonObject.getJSONArray("departures").getJSONObject(0).getString("expected");
-			// stopID = jsonObject.getJSONArray("departures").getJSONObject(0).getString("stop_id");
-			headSign = jsonObject.getJSONArray("departures").getJSONObject(0).getString("headsign");
-
-			resultTextView.setText(headSign + " expected\nin " + expectedTimeInMinutes + "minutes");
-		} catch (JSONException error) {
-			error.printStackTrace();
+	private void parseJsonBusObject(String stringResponse) {
+		Gson gson = new GsonBuilder().create();
+		mtdDepartures = gson.fromJson(stringResponse, MTDDepartures.class);
+		if (mtdDepartures.getDepartures().isEmpty()) {
 			resultTextView.setText("ERROR");
+		} else {
+			MTDBus nextBus = mtdDepartures.getDepartures().get(0);
+			resultTextView.setText(nextBus.getHeadsign() + " expected\nin " + nextBus.getExpected_mins() + "minutes");
 		}
 	}
 }
