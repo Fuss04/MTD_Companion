@@ -1,11 +1,17 @@
 package edu.illinois.mtdcompanion.data;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import android.content.Context;
 
 import edu.illinois.mtdcompanion.interfaces.DatabaseManager;
+import edu.illinois.mtdcompanion.models.BusStop;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.j256.ormlite.stmt.QueryBuilder;
 
 /**
  * Manages connection to database for storing bus stops <br>
@@ -74,6 +80,108 @@ public class BusStopDatabaseManager implements DatabaseManager {
 		}
 	}
 
-	// TODO
+	/**
+	 * Create a new entry in database table for storing bus stops
+	 * @param busStop New BusStop to be added to database table
+	 */
+	public void create(BusStop busStop) {
+		try {
+			database.getBusStopDAO().create(busStop);
+		} catch (SQLException e) {
+			logger.error("Failed to create new entry in BusStopDatabase");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Update an existing entry in database table for storing bus stops
+	 * @param busStop BusStop to be updated in database table
+	 */
+	public void update(BusStop busStop) {
+		try {
+			database.getBusStopDAO().update(busStop);
+		} catch (SQLException e) {
+			logger.error("Failed to update entry in BusStopDatabase");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Get the number of rows in database table for storing bus stops
+	 * @return Number of rows in database table for storing bus stops
+	 */
+	public long rowCount() {
+		long rowCount = 0;
+
+		try {
+			rowCount = database.getBusStopDAO().countOf();
+		} catch (SQLException e) {
+			logger.error("Failed to get number of rows in BusStopDatabase");
+			e.printStackTrace();
+		}
+
+		return rowCount;
+	}
+
+	/**
+	 * Get bus stop associated with stop code
+	 * @param stopCode Stop code associated with bus stop
+	 * @return Bus stop associated with stop code
+	 */
+	public BusStop getStopByCode(String stopCode) {
+		BusStop busStop = null;
+
+		try {
+			QueryBuilder<BusStop, Integer> busStopQuery = database.getBusStopDAO().queryBuilder();
+
+			// Get bus stop associated with stopCode
+			busStopQuery.where().eq(BusStop.STOP_CODE, stopCode);
+			busStop = busStopQuery.query().get(0);
+		} catch (SQLException e) {
+			logger.error("Failed to get entry in BusStopDatabase where stopCode={}", stopCode);
+			e.printStackTrace();
+		}
+
+		return busStop;
+	}
+
+	/**
+	 * Get bus stop associated with stop ID
+	 * @param stopID Stop ID associated with bus stop
+	 * @return Bus stop associated with stop ID
+	 */
+	public BusStop getStopByID(String stopID) {
+		BusStop busStop = null;
+
+		try {
+			QueryBuilder<BusStop, Integer> busStopQuery = database.getBusStopDAO().queryBuilder();
+
+			// Get bus stop associated with stopID
+			busStopQuery.where().eq(BusStop.STOP_ID, stopID);
+			busStop = busStopQuery.query().get(0);
+		} catch (SQLException e) {
+			logger.error("Failed to get entry in BusStopDatabase where stopID={}", stopID);
+			e.printStackTrace();
+		}
+
+		return busStop;
+	}
+
+	/**
+	 * Get list of every entry in database table for storing bus stops
+	 * @return List containing every entry in database table for storing bus stops
+	 */
+	public List<BusStop> getAll() {
+		List<BusStop> busStopList = null;
+
+		try {
+			busStopList = database.getBusStopDAO().queryForAll();
+		} catch (SQLException e) {
+			logger.error("Failed to get list of rows in BusStopDatabase");
+			e.printStackTrace();
+		}
+
+		return busStopList;
+	}
 
 }
