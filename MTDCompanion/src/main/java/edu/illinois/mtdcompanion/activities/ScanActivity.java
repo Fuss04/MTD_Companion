@@ -10,7 +10,6 @@ import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -32,7 +31,6 @@ import com.moodstocks.android.ScannerSession;
 import edu.illinois.mtdcompanion.R;
 import edu.illinois.mtdcompanion.helpers.FileUploadCallback;
 import edu.illinois.mtdcompanion.helpers.FileUploadFacade;
-import edu.illinois.mtdcompanion.helpers.ImageUploadUtility;
 import edu.illinois.mtdcompanion.models.MTDBus;
 import edu.illinois.mtdcompanion.models.MTDDepartures;
 import edu.illinois.mtdcompanion.models.MTDOCRData;
@@ -223,25 +221,6 @@ public class ScanActivity extends Activity implements ScannerSession.Listener {
 		}
 
 		return file;
-	}
-
-	private class ImageUploaderTask extends AsyncTask<String, Integer, Void> {
-
-		@Override
-		protected void onPreExecute(){
-			simpleWaitDialog = ProgressDialog.show(ScanActivity.this, "Wait", "Uploading Image");
-		}
-
-		@Override
-		protected Void doInBackground(String... params) {
-			new ImageUploadUtility().uploadSingleImage(params[0]);
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result){
-			simpleWaitDialog.dismiss();
-		}
 	}
 
 	private void sendPng(File png, FileUploadCallback callback) {
