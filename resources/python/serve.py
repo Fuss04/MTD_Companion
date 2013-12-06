@@ -5,7 +5,7 @@ from subprocess import call
 import json
 from string import digits
 
-HOST_NAME = 'localhost'
+HOST_NAME = '172.16.148.159'
 PORT_NUMBER = 9000
 
 stack = []
@@ -146,11 +146,19 @@ class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         s.end_headers()
 
     def do_POST(s):
+        print ">>> Recieced request"
         response = s.process_image()
+        print ">>> " + response
         s.send_response(200)
         s.send_header("Content-type", "text/html")
         s.end_headers()
         s.wfile.write(response)
+
+    def do_GET(s):
+        s.send_response(200)
+        s.send_header("Content-type", "text/html")
+        s.end_headers()
+        s.wfile.write("Alex's Server")
 
 
 if __name__ == '__main__':
