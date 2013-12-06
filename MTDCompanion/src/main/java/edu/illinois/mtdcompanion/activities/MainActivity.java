@@ -2,16 +2,18 @@ package edu.illinois.mtdcompanion.activities;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import edu.illinois.mtdcompanion.R;
+import edu.illinois.mtdcompanion.data.FileBusStopLoader;
+import edu.illinois.mtdcompanion.services.GPSTracker;
+
 import com.moodstocks.android.MoodstocksError;
 import com.moodstocks.android.Scanner;
-
-import edu.illinois.mtdcompanion.R;
-import edu.illinois.mtdcompanion.services.GPSTracker;
 // import android.database.sqlite.SQLiteDatabase;
 // import android.database.sqlite.SQLiteOpenHelper;
 // import android.database.Cursor;
@@ -57,7 +59,7 @@ public class MainActivity extends Activity implements Scanner.SyncListener {
 			// Ask user to enable GPS/network in settings
 			gps.showSettingsAlert();
 		}
-/*
+
 		// Initialize database
 		SharedPreferences settings = getSharedPreferences("DATABASE", 0);
 		boolean created = settings.getBoolean("CREATED", false);
@@ -69,7 +71,7 @@ public class MainActivity extends Activity implements Scanner.SyncListener {
 			SharedPreferences.Editor editor = settings.edit();
 			editor.putBoolean("CREATED", true);
 			editor.commit();
-		}*/
+		}
 	}
 
 	@Override
